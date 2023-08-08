@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  
+  match /databases/{database}/documents {
+    match /Newsletter/{email} {
+      allow create, write: if !exists(/databases/$(database)/documents/Newsletter/$(email));
+      allow read, update : if false;
+    }
+    
+    match /users/{user} {
+      allow update : if false;
+      allow read, create, write : if true;
+    }
+    
+    match /Contact_Form/{document=**}{
+      allow write, create, read : if true;
+      allow update: if false;
+    }
+    
+    match /ContactsPage/{document=**}{
+      allow read, write: if true;
+    }
+    
+    match /Posts/{postId} {
+      // Allow read access to anyone
+      allow read: if true;
+
+      // Allow write access only if the user is authenticated
+      allow write: if request.auth != null;
+
+      // Restrict update and delete operations to the author of the post
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.authorId;
+
+      // Define additional conditions for create operations
+      allow create: if request.auth != null
+                    && request.resource.data.title is string
+                    && request.resource.data.imageUrl is string
+                    && request.resource.data.body is string
+                    && request.resource.data.category is string
+                    && request.resource.data.author is string
+                    && request.resource.data.authorId is string
+                    && request.resource.data.date is timestamp;
+
+      // Allow adding comments if user is authenticated
+      match /Comments/{commentId} {
+        allow create: if request.auth != null;
+        allow update, delete: if isCommentCreatedByUser(postId, commentId);
+      }
+    }
+  }
+
+  // Custom function to check if the comment is created by the authenticated user
+  function isCommentCreatedByUser(postId, commentId) {
+    // Get the current user ID from the request
+    let userId = request.auth.uid;
+
+    // Get the comment document
+    let commentRef = /databases/$(database)/documents/Posts/$(postId)/Comments/$(commentId);
+
+    // Check if the comment is created by the authenticated user
+    return commentRef.data.userId == userId;
+  }
+}
