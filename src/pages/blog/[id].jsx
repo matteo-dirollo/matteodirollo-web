@@ -29,8 +29,8 @@ import Comments from "../../components/ui/comments/Comments";
 import { openModal } from "@/components/ui/modals/modalSlice";
 import { wrapper } from "../../store/store";
 
-const Post = ({ posts: serverProps }) => {
-  console.log("Posts from server:", serverPosts);
+const Post = () => {
+  
   const dispatch = useDispatch();
   const posts = useSelector(selectAllPosts);
   const postsStatus = useSelector(getPostsStatus);

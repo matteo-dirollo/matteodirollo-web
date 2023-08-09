@@ -24,7 +24,7 @@ import "../components/ui/lexicalEditor/nodes/ImageNode.css";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  const store = wrapper.useWrappedStore(pageProps);
+  const store = useStore();
 
   return (
     <PersistGate loading={null} persistor={store.__persistor}>
