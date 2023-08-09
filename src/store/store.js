@@ -30,7 +30,7 @@ const persistConfig = {
   key: "root",
   storage: storage,
   stateReconciler: autoMergeLevel1,
-  blacklist: ["posts", "async", "storage"],
+  blacklist: ["posts","async", "storage"],
 };
 
 const persistedReducer = persistReducer(persistConfig, combinedReducer);
@@ -50,5 +50,4 @@ const makeStore = (context) => {
   return store;
 };
 
-
-export const wrapper = createWrapper(makeStore, { debug: true });
+export const wrapper = createWrapper(makeStore, { debug: false });

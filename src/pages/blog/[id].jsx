@@ -27,24 +27,22 @@ import { LoadingSpinner } from "@/components/ui/loaders/LoadingSpinner";
 import _ from "lodash";
 import Comments from "../../components/ui/comments/Comments";
 import { openModal } from "@/components/ui/modals/modalSlice";
-import { wrapper } from '../../store/store';
+import { wrapper } from "../../store/store";
 
-const Post = () => {
+const Post = ({ posts: serverProps }) => {
+  console.log("Posts from server:", serverPosts);
   const dispatch = useDispatch();
   const posts = useSelector(selectAllPosts);
   const postsStatus = useSelector(getPostsStatus);
   const textColor = useColorModeValue("gray.700", "gray.100");
   const [isLoaded, setIsLoaded] = useState(false);
 
-  
-
   const router = useRouter();
-  
+
   const { id: articleId } = router.query;
 
   const article = _.find(posts, { id: articleId });
 
-  console.log("router:", router, "articleId:", articleId, "article:", article);
   const comments = article?.comments ? Object.values(article.comments) : [];
   const [articleDescription, setArticleDescription] = useState("");
   const truncatedArticleDescription = _.truncate(articleDescription, {
@@ -104,7 +102,6 @@ const Post = () => {
             fontSize="14px"
             sx={{ lineHeight: "1.5 !important", fontWeight: "bold" }}
           >
-
             {card.title}
           </Text>
           <Box
@@ -210,21 +207,18 @@ const Post = () => {
 
 export default Post;
 
-
-
 const getServerSideProps = wrapper.getServerSideProps(
- 
-  async ({ store, req, res, ...etc }) => {
-    const { id } = context.query;
-    console.log(id)
+  async ({ store, req, res, query }) => {
+    const { id } = query; // Use query directly, not context.query
+    console.log("Data fetched:", id); // Log the data
 
+    await store.dispatch(fetchPosts());
+    console.log("Store state after dispatch:", store.getState());
     return {
       props: {
-        // your props here...
+        posts,
       },
     };
   }
 );
-
-
 
