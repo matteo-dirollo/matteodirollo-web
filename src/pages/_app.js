@@ -3,10 +3,10 @@ import { PersistGate } from "redux-persist/integration/react";
 import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from "@/components/layout/Navbar/Navbar";
 import theme from "@/styles/theme";
-import { wrapper, persistor, store } from "@/store/store";
+import { wrapper, persistor } from "@/store/store";
 import { Provider, useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import { withRedux } from 'next-redux-wrapper';
+import { useStore } from 'react-redux';
 
 import "@fontsource/epilogue"; // Defaults to weight 400
 import "@fontsource/epilogue/400.css"; // Specify weight
@@ -25,11 +25,10 @@ import '../components/ui/lexicalEditor/nodes/ImageNode.css';
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
+  const store = useStore();
   
-
   return (
-    
-      <PersistGate loading={null} persistor={persistor}>
+      <PersistGate loading={null} persistor={store.__persistor}>
         <ChakraProvider theme={theme}>
           {router.pathname !== "/admin" && <Navbar />}
           <ModalManager />
@@ -37,7 +36,6 @@ function MyApp({ Component, pageProps }) {
           <FooterNewsletter />
         </ChakraProvider>
       </PersistGate>
-    
   );
 }
 

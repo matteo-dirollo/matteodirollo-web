@@ -212,18 +212,19 @@ export default Post;
 
 
 
+const getServerSideProps = wrapper.getServerSideProps(
+ 
+  async ({ store, req, res, ...etc }) => {
+    const { id } = context.query;
+    console.log(id)
 
-
-export const getServerSideProps = wrapper.getServerSideProps(
-  (store) =>
-    async ({ params }) => {
-      const { id } = context.query;
-      console.log(id)
-      return {
-        props: {
-       
-        },
-      };
-    }
+    return {
+      props: {
+        // your props here...
+      },
+    };
+  }
 );
+
+
 
