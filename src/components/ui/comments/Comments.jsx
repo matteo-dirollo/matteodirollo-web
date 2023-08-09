@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Heading } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import CommentItem from './CommentItem';
