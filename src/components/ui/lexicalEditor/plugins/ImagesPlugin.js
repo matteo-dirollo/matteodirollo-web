@@ -189,6 +189,8 @@ export function InsertImageDialog({ activeEditor, onClose }) {
   )
 }
 
+let img = null;
+
 export default function ImagesPlugin({ captionsEnabled }) {
   const [editor] = useLexicalComposerContext()
 
@@ -240,20 +242,25 @@ export default function ImagesPlugin({ captionsEnabled }) {
 
 const TRANSPARENT_IMAGE =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-const img = document.createElement("img")
-img.src = TRANSPARENT_IMAGE
+
+
 
 function onDragStart(event) {
-  const node = getImageNodeInSelection()
+  if (CAN_USE_DOM && !img) {  
+    img = document.createElement("img");
+    img.src = TRANSPARENT_IMAGE;  // Moved this line here.
+  }
+
+  const node = getImageNodeInSelection();
   if (!node) {
-    return false
+    return false;
   }
-  const dataTransfer = event.dataTransfer
+  const dataTransfer = event.dataTransfer;
   if (!dataTransfer) {
-    return false
+    return false;
   }
-  dataTransfer.setData("text/plain", "_")
-  dataTransfer.setDragImage(img, 0, 0)
+  dataTransfer.setData("text/plain", "_");
+  dataTransfer.setDragImage(img, 0, 0);
   dataTransfer.setData(
     "application/x-lexical-drag",
     JSON.stringify({
@@ -269,9 +276,9 @@ function onDragStart(event) {
       },
       type: "image"
     })
-  )
+  );
 
-  return true
+  return true;
 }
 
 function onDragover(event) {

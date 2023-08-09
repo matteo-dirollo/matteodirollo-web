@@ -12,6 +12,7 @@ import {
 import { auth, db } from "../firebase-config";
 import { appLoaded, asyncActionError } from "../asyncSlice";
 import { onSnapshot, doc, setDoc, getDoc } from "firebase/firestore";
+import { HYDRATE } from "next-redux-wrapper";
 
 const initialState = {
   authenticated: false,
@@ -274,6 +275,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+  
       .addCase(fetchFirestoreUserById.pending, (state, action) => {
         state.status = "loading";
         state.error = null;
@@ -284,7 +286,7 @@ const authSlice = createSlice({
         const user = action.payload;
         state.currentUser = {
           ...state.currentUser,
-         
+
           role: user.role,
         };
       })
@@ -406,7 +408,8 @@ const authSlice = createSlice({
           "Error adding document to firebase:",
           action.error.message
         );
-      });
+      })
+ 
   },
 });
 

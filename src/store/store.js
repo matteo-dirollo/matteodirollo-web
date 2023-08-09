@@ -12,6 +12,8 @@ import authReducer from '../api/auth/authSlice';
 import postsReducer from '../pages/Blog/postsSlice';
 import storageReducer from '../api/firestore/storageSlice';
 
+
+
 const rootReducer = combineReducers({
   async: asyncReducer,
   modals: modalReducer,
@@ -37,14 +39,19 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, combinedReducer);
 
-const makeStore = (context) => configureStore({
-  reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
-    serializableCheck: false,
-  }),
-  devTools: true,
-});
+const makeStore = (context) => {
+  const storeInstance = configureStore({
+    reducer: persistedReducer,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+    devTools: true,
+  });
+  const persistorInstance = persistStore(storeInstance);
+  return { store: storeInstance, persistor: persistorInstance };
+};
 
-export const store = makeStore();
-export const persistor = persistStore(store);
+const { store: storeInstance, persistor: persistorInstance } = makeStore();
+export const store = storeInstance;
+export const persistor = persistorInstance;
 export const wrapper = createWrapper(makeStore, {debug: true});
