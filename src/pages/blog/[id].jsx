@@ -23,13 +23,14 @@ import { GoShare } from "react-icons/go";
 import PlainEditor from "../../components/ui/lexicalEditor/PlainEditor";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { LoadingSpinner } from '@/components/ui/loaders/LoadingSpinner';
+import { LoadingSpinner } from "@/components/ui/loaders/LoadingSpinner";
 import _ from "lodash";
-import Comments from '../../components/ui/comments/Comments';
-import { openModal } from '@/components/ui/modals/modalSlice';
-
+import Comments from "../../components/ui/comments/Comments";
+import { openModal } from "@/components/ui/modals/modalSlice";
+import { wrapper } from "../../store/store";
 
 const Post = () => {
+  
   const dispatch = useDispatch();
   const posts = useSelector(selectAllPosts);
   const postsStatus = useSelector(getPostsStatus);
@@ -37,9 +38,11 @@ const Post = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   const router = useRouter();
+
   const { id: articleId } = router.query;
 
   const article = _.find(posts, { id: articleId });
+
   const comments = article?.comments ? Object.values(article.comments) : [];
   const [articleDescription, setArticleDescription] = useState("");
   const truncatedArticleDescription = _.truncate(articleDescription, {
@@ -81,7 +84,7 @@ const Post = () => {
       setArticleDescription(extractPlainText(parsedBody.root));
       setIsLoaded(true);
     }
-  }, [postsStatus, dispatch, article, extractPlainText]);
+  }, [postsStatus, dispatch, article, extractPlainText, router]);
 
   const renderPosts = _.slice(cards, 0, 3).map((card) => (
     <React.Fragment key={card.id}>
@@ -99,9 +102,6 @@ const Post = () => {
             fontSize="14px"
             sx={{ lineHeight: "1.5 !important", fontWeight: "bold" }}
           >
-
-
-
             {card.title}
           </Text>
           <Box
@@ -206,3 +206,19 @@ const Post = () => {
 };
 
 export default Post;
+
+const getServerSideProps = wrapper.getServerSideProps(
+  async ({ store, req, res, query }) => {
+    const { id } = query; // Use query directly, not context.query
+    console.log("Data fetched:", id); // Log the data
+
+    await store.dispatch(fetchPosts());
+    console.log("Store state after dispatch:", store.getState());
+    return {
+      props: {
+        posts,
+      },
+    };
+  }
+);
+ 
