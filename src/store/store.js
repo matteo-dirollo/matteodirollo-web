@@ -51,3 +51,6 @@ const makeStore = (context) => {
 };
 
 export const wrapper = createWrapper(makeStore, { debug: false });
+export const persistor = wrapper.__persistor;
+
+

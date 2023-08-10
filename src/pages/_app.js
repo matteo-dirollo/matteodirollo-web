@@ -3,10 +3,13 @@ import { PersistGate } from "redux-persist/integration/react";
 import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from "@/components/layout/Navbar/Navbar";
 import theme from "@/styles/theme";
-import { wrapper } from "@/store/store";
-import { Provider, useSelector } from "react-redux";
+import { wrapper, store, persistor } from "@/store/store";
+import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import { useStore } from "react-redux";
+
+import Provider from "react-redux"
+
+
 
 import "@fontsource/epilogue"; // Defaults to weight 400
 import "@fontsource/epilogue/400.css"; // Specify weight
@@ -21,21 +24,25 @@ import "../components/ui/lexicalEditor/ui/Dialog.css";
 import "../components/ui/lexicalEditor/ui/Input.css";
 import "../components/ui/lexicalEditor/ui/Modal.css";
 import "../components/ui/lexicalEditor/nodes/ImageNode.css";
+import "../components/ui/lexicalEditor/styles.css";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  const store = useStore();
+  const { store, props } = wrapper.useWrappedStore(pageProps);
+  console.log('wrapper:',store)
 
   return (
-    <PersistGate loading={null} persistor={store.__persistor}>
+    <Provider>
+    <PersistGate loading={null} persistor={persistor}>
       <ChakraProvider theme={theme}>
         {router.pathname !== "/admin" && <Navbar />}
         <ModalManager />
-        <Component {...pageProps} />
+        <Component {...props.pageProps} />
         <FooterNewsletter />
       </ChakraProvider>
     </PersistGate>
+    </Provider>
   );
 }
 
-export default wrapper.withRedux(MyApp);
+export default MyApp;
